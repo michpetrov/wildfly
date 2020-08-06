@@ -55,6 +55,8 @@ import javax.batch.runtime.StepExecution;
 import org.jberet.operations.AbstractJobOperator;
 import org.jberet.runtime.JobExecutionImpl;
 import org.jberet.spi.BatchEnvironment;
+import org.jboss.as.ee.component.EEModuleDescription;
+import org.jboss.as.naming.context.NamespaceContextSelector;
 import org.jboss.as.server.suspend.ServerActivity;
 import org.jboss.as.server.suspend.ServerActivityCallback;
 import org.jboss.as.server.suspend.SuspendController;
@@ -99,14 +101,17 @@ public class JobOperatorService extends AbstractJobOperator implements WildFlyJo
     private final WildFlyJobXmlResolver resolver;
     private final BatchJobServerActivity serverActivity;
     private final String deploymentName;
+    private final EEModuleDescription moduleDescription;
 
     private final ThreadLocal<Boolean> permissionsCheckEnabled = ThreadLocal.withInitial(() -> Boolean.TRUE);
 
-    public JobOperatorService(final Boolean restartJobsOnResume, final String deploymentName, final WildFlyJobXmlResolver resolver) {
+    public JobOperatorService(final Boolean restartJobsOnResume, final String deploymentName, final WildFlyJobXmlResolver resolver,
+                              final EEModuleDescription moduleDescription) {
         this.restartJobsOnResume = restartJobsOnResume;
         this.deploymentName = deploymentName;
         this.resolver = resolver;
         this.serverActivity = new BatchJobServerActivity();
+        this.moduleDescription = moduleDescription;
     }
 
     @Override
@@ -410,6 +415,15 @@ public class JobOperatorService extends AbstractJobOperator implements WildFlyJo
         }
     }
 
+    @Override
+    public void pushNamespaceContextSelector() {
+        NamespaceContextSelector.pushCurrentSelector(moduleDescription.getNamespaceContextSelector());
+    }
+
+    @Override
+    public void popNamespaceContextSelector() {
+        NamespaceContextSelector.popCurrentSelector();
+    }
 
     private class BatchJobServerActivity implements ServerActivity {
         private final AtomicBoolean jobsStopped = new AtomicBoolean(false);

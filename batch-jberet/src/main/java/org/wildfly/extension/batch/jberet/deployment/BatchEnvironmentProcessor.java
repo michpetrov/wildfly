@@ -22,6 +22,7 @@
 
 package org.wildfly.extension.batch.jberet.deployment;
 
+import static org.jboss.as.ee.component.Attachments.EE_MODULE_DESCRIPTION;
 import static org.jboss.as.server.deployment.Attachments.DEPLOYMENT_COMPLETE_SERVICES;
 import static org.jboss.as.weld.Capabilities.WELD_CAPABILITY_NAME;
 
@@ -114,7 +115,7 @@ public class BatchEnvironmentProcessor implements DeploymentUnitProcessor {
             final String deploymentName = deploymentUnit.getName();
 
             // Create the job operator service used interact with a deployments batch job
-            final JobOperatorService jobOperatorService = new JobOperatorService(restartJobsOnResume, deploymentName, jobXmlResolver);
+            final JobOperatorService jobOperatorService = new JobOperatorService(restartJobsOnResume, deploymentName, jobXmlResolver, deploymentUnit.getAttachment(EE_MODULE_DESCRIPTION));
 
             // Create the batch environment
             final BatchEnvironmentService service = new BatchEnvironmentService(moduleClassLoader, jobXmlResolver, deploymentName, legacySecurityPresent);

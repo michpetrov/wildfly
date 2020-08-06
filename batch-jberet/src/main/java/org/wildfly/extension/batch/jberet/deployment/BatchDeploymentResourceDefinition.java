@@ -102,10 +102,13 @@ public class BatchDeploymentResourceDefinition extends SimpleResourceDefinition 
                 final String jobName = resolveValue(context, operation, JOB_XML_NAME).asString();
                 final Properties properties = resolvePropertyValue(context, operation, PROPERTIES);
                 try {
+                    jobOperator.pushNamespaceContextSelector();
                     final long executionId = jobOperator.start(jobName, properties);
                     context.getResult().set(executionId);
                 } catch (JobStartException | JobSecurityException e) {
                     throw createOperationFailure(e);
+                } finally {
+                    jobOperator.popNamespaceContextSelector();
                 }
             }
         });

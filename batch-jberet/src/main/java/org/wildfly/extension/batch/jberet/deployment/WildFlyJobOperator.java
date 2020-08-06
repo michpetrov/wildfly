@@ -70,4 +70,7 @@ interface WildFlyJobOperator extends JobOperator {
         }
         return defaultValue;
     }
+
+    void pushNamespaceContextSelector();
+    void popNamespaceContextSelector();
 }
