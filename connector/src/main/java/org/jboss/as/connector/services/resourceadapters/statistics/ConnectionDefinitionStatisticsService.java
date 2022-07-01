@@ -68,7 +68,7 @@ public class ConnectionDefinitionStatisticsService implements Service<Management
                                                  final String poolName,
                                                  final boolean statsEnabled) {
         super();
-        this.jndiName = jndiName;
+        this.jndiName = buildJndiName(jndiName);
         if (registration.isAllowsOverride()) {
             overrideRegistration = registration.registerOverrideModel(poolName, new OverrideDescriptionProvider() {
                 @Override
@@ -154,5 +154,24 @@ public class ConnectionDefinitionStatisticsService implements Service<Management
 
     public Injector<CloneableBootstrapContext> getBootstrapContextInjector() {
         return bootstrapContext;
+    }
+
+    /**
+     * @link org.jboss.as.connector.services.resourceadapters.deployment.AbstractResourceAdapterDeploymentService.AbstractWildFlyRaDeployer#buildJndiName(java.lang.String, java.lang.Boolean)
+     */
+    private String buildJndiName(String rawJndiName) {
+        final String jndiName;
+        if (!rawJndiName.startsWith("java:")) {
+            if (rawJndiName.startsWith("jboss/")) {
+                // Bind to java:jboss/ namespace
+                jndiName = "java:" + rawJndiName;
+            } else {
+                // Bind to java:/ namespace
+                jndiName= "java:/" + rawJndiName;
+            }
+        } else {
+            jndiName = rawJndiName;
+        }
+        return jndiName;
     }
 }
