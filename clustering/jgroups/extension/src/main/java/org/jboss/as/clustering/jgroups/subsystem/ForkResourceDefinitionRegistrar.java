@@ -158,4 +158,9 @@ public class ForkResourceDefinitionRegistrar extends AbstractChannelResourceDefi
 
         return registration;
     }
+
+    @Override
+    public void addRuntime(OperationContext context, ModelNode model) {
+        // skip
+    }
 }
